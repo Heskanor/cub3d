@@ -4,7 +4,7 @@ typedef struct  s_map
 {
     char *s;
     int f_color;
-    int r,no,so,we,ea,s,f,c;
+    int fd, r,no,so,we,ea,s,f,c;
     int c_color;
     int width;
     int height;
@@ -12,6 +12,7 @@ typedef struct  s_map
     char *so_text;
     char *we_text;
     char *ea_text;
+    int i,j;
     int **map;
 }t_map;
 
@@ -29,24 +30,53 @@ initializer(t_map *map)
   map->c_color = 0;
   map->width = 0;
   map->height = 0;
-
+  map->j = 0;
+  map->i = 0;
 }
 int rgb_to_int(int r,int g,int b)
 {
     retun ((r&0x0ff)<<16)|((g&0x0ff)<<8)|(b&0x0ff);
 }
+int check_empty(char *s)
+{
+  int i;
+
+  i = 0;
+  while (s[i] == ' ' || s[i] == '\n' || s[i] == '\t'
+			|| s[i] == '\v' || s[i] == '\f' || s[i] == '\r')
+		i++;
+  if (s[i] == '\0') //empty
+    return 1;
+  else if (s[i] = '1')// map start
+    return 2;
+  else                // error
+    return 0;
+}
+void	ft_putstr(char *s)
+{
+	int i;
+
+	i = 0;
+	if (s)
+	{
+		while (s[i] != '\0')
+			i++;
+		write(1, s, i);
+	}
+}
 int checker(t_map *map, char *s)
 {
-    int i,j,fd,r;
-    i =1;
+    int i,j,r,e,len;
+    i = 1;
     j = 0;
     r = 0;
 
     initializer(map);
     while (i != 0)
     {
-        i=get_nextline(fd,&s);//empty line ?
-        if (r < 8)
+        e = check_empty(s);
+        i=get_nextline(map->fd,&s);//empty line ?
+        if (r < 8 && e == 0)
         {
           if (s[0] == 'R')
             r_checker(map,s,&r); 
@@ -54,16 +84,19 @@ int checker(t_map *map, char *s)
             no_checker(map,s);
           else if (s[0] == 'F' || s[0] == 'C')
             clor_checker(s);
-          else if(check_empty() == )//check empty if yes go else exit_erno
-            //check_empty line
-             // ifgo 
-                //else erno
         }
-        else
+        else if (r == 8 && e == 2)
+        { 
+          r = 9;
+          len = ft_strlen(s);
+          map->i =(len > map->i) ? len : map->i;
+          map->j++;
+        
+        }else if( r < 8 && e == 2)
         {
-
+          ft_putstr("Error \n manque de parametres");
+          return 1;
         }
-
         free(s);
     }
 }
