@@ -66,51 +66,80 @@ void	ft_putstr(char *s)
 }
 int checker(t_map *map, char *s)
 {
-    int i,j,r,e,len;
-    i = 1;
-    j = 0;
-    r = 0;
+  int j,r,e,len;
 
-    initializer(map);
-    while (i != 0)
+  j = 0;
+  r = 0;
+  e = check_empty(s);
+  if (r < 0)
+    return (r);
+  if (r < 8 && e == 0)
+  {
+    if (s[0] == 'R')
+      r_checker(map,s,&r); 
+    else if (s[0] == 'N' || s[0] == 'S' || s[0] == 'W'|| s[0] == 'E')
+      no_checker(map,s,&r);
+    else if (s[0] == 'F' || s[0] == 'C')
+      clor_checker(map, s, &r);
+  }
+  else if (r == 8 && e == 2)
+  { 
+    r = 9;
+    len = ft_strlen(s);
+    map->i =(len > map->i) ? len : map->i;
+    map->j++;
+  
+  }else if( r < 8 && e == 2)
+  {
+    ft_putstr("Error \n manque de parametres");
+    return 1;
+  }
+  return (0);
+}
+int ft_error(int i)
+{
+/* 
+** -1 need an option
+** -2 incorrect resolution
+** -3 incorrect north texture
+** -4 incorrect soth texture
+** -5 incorrect west texture
+** -6 incorrect east texture
+** -7 incorrect sprite texture
+** -8 incorrect Floor color
+** -9 incorrect Celling color
+** -10 incorrect map
+** 0 wp :)
+*/
+
+
+}
+int two_repeat(t_map *map)
+{
+  int i;
+  char *s;
+  i = 1;
+
+  initializer(map);
+  while (i != 0)
     {
-        e = check_empty(s);
+       
         i=get_nextline(map->fd,&s);//empty line ?
-        if (r < 8 && e == 0)
-        {
-          if (s[0] == 'R')
-            r_checker(map,s,&r); 
-          else if (s[0] == 'N' || s[0] == 'S' || s[0] == 'W'|| s[0] == 'E')
-            no_checker(map,s);
-          else if (s[0] == 'F' || s[0] == 'C')
-            clor_checker(s);
-        }
-        else if (r == 8 && e == 2)
-        { 
-          r = 9;
-          len = ft_strlen(s);
-          map->i =(len > map->i) ? len : map->i;
-          map->j++;
+        checker(map, s);
         
-        }else if( r < 8 && e == 2)
-        {
-          ft_putstr("Error \n manque de parametres");
-          return 1;
-        }
         free(s);
     }
 }
-t_map file_reader()
+int file_reader(t_map *map)
 {
-    int i,rgb,fd;
-    int r,g,b,error;
+    int i,rgb;
+    int r,g,b;
     char *s;
-    t_map map;
     
-    fd = open("map.cub",O_RDONLY);
+    map->fd = open("map.cub",O_RDONLY);
+    return (ft_error(two_repeat(&map)));
     
-
-    close(fd);
+    close(map->fd);
 /*
 ** Read all file 
 */
